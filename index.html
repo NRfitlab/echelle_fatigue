@@ -5,32 +5,44 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Échelle de fatigue</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#5b4bb7">
+  <link rel="icon" href="./icons/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#0a0e1a">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Fatigue">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --p:#5b4bb7;
-      --bg:#f4f3fb;
-      --card:#fff;
-      --txt:#20222b;
-      --mut:#686b78;
-      --bd:#dfdfea;
-      --ok:#177245;
-      --err:#b3261e
+      --p:#7c5cff;
+      --p2:#4f94fa;
+      --bg:#0a0e1a;
+      --card:rgba(255,255,255,0.05);
+      --txt:#eef0fa;
+      --mut:#8a92ad;
+      --bd:rgba(255,255,255,0.09);
+      --field:rgba(255,255,255,0.04);
+      --ok:#4ade80;
+      --err:#f87171;
+      --font-head:'Sora',Arial,sans-serif
     }
 
     *{
       box-sizing:border-box
     }
 
+    html,body{min-height:100%}
+
     body{
       margin:0;
       font-family:Arial,sans-serif;
-      background:var(--bg);
-      color:var(--txt)
+      color:var(--txt);
+      background:radial-gradient(circle at 50% 0%, rgba(124,92,255,0.28), transparent 55%),var(--bg);
+      background-attachment:fixed;
+      background-repeat:no-repeat
     }
 
     .container{
@@ -41,12 +53,21 @@
 
     header{
       text-align:center;
-      margin:10px 0 20px
+      margin:10px 0 24px
+    }
+
+    .logo{
+      width:64px;
+      height:64px;
+      margin-bottom:12px;
+      filter:drop-shadow(0 0 18px rgba(124,92,255,0.55))
     }
 
     h1{
       margin:0;
-      font-size:2rem
+      font-size:1.7rem;
+      font-weight:500;
+      font-family:var(--font-head)
     }
 
     .subtitle{
@@ -57,34 +78,40 @@
 
     .card{
       background:var(--card);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
       border:1px solid var(--bd);
-      border-radius:18px;
+      border-radius:20px;
       padding:22px;
-      margin:14px 0;
-      box-shadow:0 3px 12px #0000000a
+      margin:14px 0
     }
 
     .card h2{
       margin:0 0 14px;
-      color:#44358f;
-      font-size:1.3rem
+      color:var(--txt);
+      font-size:1.2rem;
+      font-weight:500;
+      font-family:var(--font-head)
     }
 
     button{
       width:100%;
       border:0;
-      border-radius:12px;
+      border-radius:14px;
       padding:15px;
-      background:var(--p);
+      background:linear-gradient(90deg,var(--p),var(--p2));
       color:#fff;
       font-size:1rem;
-      font-weight:700;
+      font-weight:500;
       cursor:pointer;
-      margin-top:10px
+      margin-top:10px;
+      box-shadow:0 8px 24px rgba(124,92,255,0.35);
+      font-family:var(--font-head)
     }
 
     button:disabled{
-      opacity:.6;
+      opacity:.55;
+      box-shadow:none;
       cursor:not-allowed
     }
 
@@ -93,8 +120,9 @@
       margin:0;
       padding:8px 12px;
       background:transparent;
-      color:#44358f;
-      border:1px solid var(--bd)
+      color:var(--txt);
+      border:1px solid var(--bd);
+      box-shadow:none
     }
 
     input[type=email],
@@ -104,7 +132,8 @@
       border:1px solid var(--bd);
       border-radius:10px;
       font-size:1rem;
-      background:#fff
+      background:var(--field);
+      color:var(--txt)
     }
 
     .login-label{
@@ -129,7 +158,7 @@
     }
 
     .info{
-      color:#44358f
+      color:var(--p2)
     }
 
     .small{
@@ -160,7 +189,8 @@
 
     .week-box{
       text-align:center;
-      background:#fff;
+      background:var(--card);
+      backdrop-filter:blur(14px);
       border:1px solid var(--bd);
       padding:12px;
       border-radius:12px;
@@ -171,7 +201,7 @@
     .intro{
       font-size:1.05rem;
       margin:20px 0 8px;
-      color:#44358f
+      color:var(--txt)
     }
 
     .question{
@@ -204,14 +234,15 @@
       border-radius:10px;
       cursor:pointer;
       font-weight:600;
-      background:#fff;
+      background:var(--field);
+      color:var(--txt);
       min-height:50px;
       transition:.15s
     }
 
     .scale label:hover{
-      border-color:var(--p);
-      background:#f0eff8
+      border-color:var(--p2);
+      background:rgba(124,92,255,0.12)
     }
 
     /* Masque complètement le petit rond */
@@ -223,9 +254,9 @@
 
     /* Case rectangulaire sélectionnée */
     .scale label:has(input[type=radio]:checked){
-      border-color:var(--p);
-      background:#f0eff8;
-      color:var(--p)
+      border-color:var(--p2);
+      background:linear-gradient(90deg,rgba(124,92,255,0.25),rgba(79,148,250,0.25));
+      color:var(--txt)
     }
 
     .scale-labels{
@@ -249,7 +280,7 @@
 
     @media(max-width:500px){
       h1{
-        font-size:1.65rem
+        font-size:1.4rem
       }
 
       .card{
@@ -281,7 +312,8 @@
   <section id="authView" class="hidden">
 
     <header>
-      <h1>😴 Échelle de fatigue</h1>
+      <img class="logo" src="./icons/icon-192.png" alt="">
+      <h1>Échelle de fatigue</h1>
       <div class="subtitle">
         Connectez-vous pour remplir votre questionnaire hebdomadaire.
       </div>
@@ -325,7 +357,8 @@
   <section id="surveyView" class="hidden">
 
     <header>
-      <h1>😴 Échelle de fatigue</h1>
+      <img class="logo" src="./icons/icon-192.png" alt="">
+      <h1>Échelle de fatigue</h1>
 
       <div class="subtitle">
         Lisez chaque item et cochez le chiffre qui s'applique le plus à vous durant la semaine passée.
@@ -971,4 +1004,3 @@ if("serviceWorker" in navigator){
 
 </body>
 </html>
-```
