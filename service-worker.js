@@ -1,39 +1,26 @@
-const CACHE_NAME = "echelle-fatigue-v2";
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", e => e.waitUntil(
+  caches.keys().then(k => Promise.all(k.map(x => caches.delete(x)))).then(() => self.clients.claim())
+));
+self.addEventListener("fetch", () => {});
 
-const ASSETS = [
-  "./",
-  "./index.html",
-  "./manifest.json",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/apple-touch-icon.png",
-  "./icons/favicon-32.png"
-];
-
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(ASSETS))
-  );
-  self.skipWaiting();
+self.addEventListener("push", event => {
+  let d = {};
+  try { d = event.data ? event.data.json() : {}; } catch (e) {}
+  event.waitUntil(self.registration.showNotification(d.title || "Rappel", {
+    body: d.body || "",
+    icon: "./icons/icon-192.png",
+    badge: "./icons/favicon-32.png",
+    tag: "rappel-hebdo",
+    data: { url: d.url || "./" }
+  }));
 });
 
-self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
-      )
-    )
-  );
-  self.clients.claim();
-});
-
-self.addEventListener("fetch", event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
-  );
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  const url = event.notification.data.url;
+  event.waitUntil(clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => {
+    for (const c of list) if (c.url.startsWith(url) && "focus" in c) return c.focus();
+    return clients.openWindow(url);
+  }));
 });
