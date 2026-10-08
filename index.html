@@ -376,7 +376,10 @@
 
 
     <div class="week-box" id="weekBox"></div>
-
+    <div id="notifBox" class="card hidden"><h2>🔔 Rappel du lundi</h2>
+    <p class="small" id="notifHelp" style="text-align:left;margin:0 0 8px"></p>
+    <button id="notifBtn" type="button">Activer le rappel du lundi à 7 h</button>
+    <div id="notifStatus" class="status"></div></div>
 
     <form id="survey">
 
@@ -654,7 +657,37 @@ const supabase = createClient(
 const $ = id => document.getElementById(id);
 
 let currentUser = null;
-
+// ---- Notifications push ----
+const VAPID_PUBLIC_KEY="COLLER_LA_MEME_CLE_PUBLIQUE_QUE_SUIVI_QUOTIDIEN";
+const b64=s=>{const p="=".repeat((4-s.length%4)%4),r=atob((s+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(r,c=>c.charCodeAt(0))};
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone;
+const pushOK="serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
+function saveSub(sub){const j=sub.toJSON();return supabase.from("push_subscriptions").upsert({participant_id:currentUser.id,app:"fatigue",endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth},{onConflict:"participant_id,app,endpoint"})}
+async function setupNotif(){
+ const box=$("notifBox"),btn=$("notifBtn"),help=$("notifHelp");
+ if(isIOS&&!standalone){box.classList.remove("hidden");btn.classList.add("hidden");help.textContent="Sur iPhone : dans Safari, touchez Partager, puis « Sur l'écran d'accueil ». Ouvrez ensuite l'app depuis son icône pour activer le rappel.";return}
+ if(!pushOK||VAPID_PUBLIC_KEY.startsWith("COLLER"))return;
+ const reg=await navigator.serviceWorker.ready;
+ const sub=await reg.pushManager.getSubscription();
+ if(sub&&Notification.permission==="granted"){box.classList.add("hidden");await saveSub(sub);return}
+ box.classList.remove("hidden");
+ if(Notification.permission==="denied"){help.textContent="Les notifications sont bloquées pour ce site. Autorisez-les dans les réglages du navigateur, puis rechargez la page.";btn.classList.add("hidden");return}
+ help.textContent="Recevez un rappel chaque lundi à 7 h tant que le questionnaire de la semaine n'est pas rempli.";btn.classList.remove("hidden");
+}
+$("notifBtn").addEventListener("click",async()=>{
+ status("notifStatus","Activation…","info");
+ try{
+  if(await Notification.requestPermission()!=="granted"){status("notifStatus","Autorisation refusée.","error");return}
+  const reg=await navigator.serviceWorker.ready;
+  const sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64(VAPID_PUBLIC_KEY)});
+  const {error}=await saveSub(sub);
+  if(error){status("notifStatus","Erreur : "+error.message,"error");return}
+  $("notifBtn").classList.add("hidden");$("notifHelp").textContent="";
+  status("notifStatus","✅ Rappel activé : notification chaque lundi à 7 h.","success");
+  setTimeout(()=>{$("notifBox").classList.add("hidden");status("notifStatus","")},3000);
+ }catch(e){status("notifStatus","Erreur : "+e.message,"error")}
+});
 
 function show(view){
 
