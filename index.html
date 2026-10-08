@@ -658,7 +658,7 @@ const $ = id => document.getElementById(id);
 
 let currentUser = null;
 // ---- Notifications push ----
-const VAPID_PUBLIC_KEY="COLLER_LA_MEME_CLE_PUBLIQUE_QUE_SUIVI_QUOTIDIEN";
+const VAPID_PUBLIC_KEY="BH4JwNxV3fKHKpgyMzFs-PXIhvHh_xF-v9vjUhc4Xu5kOXj7i2WAO_pLUydnv-RwsMC0tfyWAMXxxgDiS_jUP8U";
 const b64=s=>{const p="=".repeat((4-s.length%4)%4),r=atob((s+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(r,c=>c.charCodeAt(0))};
 const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
 const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone;
@@ -832,6 +832,7 @@ async function enterSurvey(user){
 
   show("survey");
 
+  setupNotif().catch(()=>{});
   await checkThisWeek();
 }
 
