@@ -376,9 +376,9 @@
 
 
     <div class="week-box" id="weekBox"></div>
-    <div id="notifBox" class="card hidden"><h2>🔔 Rappel du lundi</h2>
+    <div id="notifBox" class="card hidden"><h2>🔔 Rappel du dimanche</h2>
     <p class="small" id="notifHelp" style="text-align:left;margin:0 0 8px"></p>
-    <button id="notifBtn" type="button">Activer le rappel du lundi à 7 h</button>
+    <button id="notifBtn" type="button">Activer le rappel du dimanche à 11 h</button>
     <div id="notifStatus" class="status"></div></div>
 
     <form id="survey">
@@ -673,7 +673,7 @@ async function setupNotif(){
  if(sub&&Notification.permission==="granted"){box.classList.add("hidden");await saveSub(sub);return}
  box.classList.remove("hidden");
  if(Notification.permission==="denied"){help.textContent="Les notifications sont bloquées pour ce site. Autorisez-les dans les réglages du navigateur, puis rechargez la page.";btn.classList.add("hidden");return}
- help.textContent="Recevez un rappel chaque lundi à 7 h tant que le questionnaire de la semaine n'est pas rempli.";btn.classList.remove("hidden");
+ help.textContent="Recevez un rappel chaque dimanche à 11 h tant que le questionnaire de la semaine n'est pas rempli.";btn.classList.remove("hidden");
 }
 $("notifBtn").addEventListener("click",async()=>{
  status("notifStatus","Activation…","info");
@@ -684,7 +684,7 @@ $("notifBtn").addEventListener("click",async()=>{
   const {error}=await saveSub(sub);
   if(error){status("notifStatus","Erreur : "+error.message,"error");return}
   $("notifBtn").classList.add("hidden");$("notifHelp").textContent="";
-  status("notifStatus","✅ Rappel activé : notification chaque lundi à 7 h.","success");
+  status("notifStatus","✅ Rappel activé : notification chaque dimanche à 11 h.","success");
   setTimeout(()=>{$("notifBox").classList.add("hidden");status("notifStatus","")},3000);
  }catch(e){status("notifStatus","Erreur : "+e.message,"error")}
 });
